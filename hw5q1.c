@@ -10,14 +10,14 @@
 
 
 /* FUNCTIONS */
-char* SplitMainExpression(char* expression);
-bool calculate(char* expression,
-               unsigned int modulus, unsigned int* result);
+char* SplitExpression(char* expression);
 void StringCopy(char *source, char *destination);
 unsigned int ExtractIntFromStr(char* string);
 bool ContainsParentheses(char* string);
 bool MathFunc(unsigned long long val_1, unsigned long long val_2,
               char operation, unsigned int modulus, unsigned int* result);
+bool GetNumbers(char* left, char* right, unsigned long long* left_val_ptr,
+                unsigned long long* right_val_ptr);
 /* -------------------------------------------------------- */
 
 /*
@@ -28,8 +28,40 @@ bool calculate_modular_expression(unsigned int modulus,
                                   char* expression,
                                   unsigned int* expression_result)
 {
+    char left[MAX_EXPRESSION_LENGTH] = {0};
+    char right[MAX_EXPRESSION_LENGTH] = {0};
+    char* op = SplitExpression(expression+1);
+    unsigned long long left_val = 0, right_val = 0;
+    while (*op == '(')
+    {
+        op--;
+    }
+    while (*op == ')')
+    {
+        op++;
+    }
 
-    return calculate(expression, modulus, expression_result);
+    StringCopy((expression+1), left);
+    StringCopy((op+1), right);
+
+    if (GetNumbers(left, right, &left_val, &right_val) == false)
+    {
+        return false;
+    }
+
+    if (left_val == 0)
+    {
+        calculate_modular_expression(modulus, left, expression_result);
+        left_val = *expression_result;
+    }
+
+    if (right_val == 0)
+    {
+        calculate_modular_expression(modulus, right, expression_result);
+        right_val = *expression_result;
+    }
+
+    return MathFunc(left_val, right_val, *op, modulus, expression_result);
 }
 
 
@@ -96,66 +128,45 @@ int main()
     return 0;
 }
 
-
-bool calculate(char* expression, unsigned int modulus,
-               unsigned int* result)
+bool GetNumbers(char* left, char* right, unsigned long long* left_val_ptr,
+                unsigned long long* right_val_ptr)
 {
-    char left[MAX_EXPRESSION_LENGTH] = {0};
-    char right[MAX_EXPRESSION_LENGTH] = {0};
-    char* op = SplitMainExpression(expression+1);
-    unsigned long long left_val = 0, right_val = 0;
-    while (*op == '(')
-    {
-        op--;
-    }
-    while (*op == ')')
-    {
-        op++;
-    }
-
-    StringCopy((expression+1), left);
-    StringCopy((op+1), right);
-
     if (ContainsParentheses(left) == false)
     {
-        left_val = ExtractIntFromStr(left);
+        *left_val_ptr = ExtractIntFromStr(left);
+        if (*left_val_ptr == 0)
+        {
+            return false;
+        }
     }
 
     if (ContainsParentheses(right) == false)
     {
-        right_val = ExtractIntFromStr(right);
+        *right_val_ptr = ExtractIntFromStr(right);
+        if (*right_val_ptr == 0)
+        {
+            return false;
+        }
     }
 
-    if (left_val == 0)
-    {
-        calculate(left, modulus, result);
-        left_val = *result;
-    }
-
-    if (right_val == 0)
-    {
-        calculate(right, modulus, result);
-        right_val = *result;
-    }
-
-    return MathFunc(left_val, right_val, *op, modulus, result);
+    return true;
 }
 
 
 
 void StringCopy(char *source, char *destination)
 {
-    int paren_ctr = 0;
+    int parentheses_counter = 0;
     do
     {
         if (*source == '(')
         {
-            paren_ctr++;
+            parentheses_counter++;
         }
 
         if (*source == ')')
         {
-            paren_ctr--;
+            parentheses_counter--;
         }
 
         *destination = *source;
@@ -163,14 +174,14 @@ void StringCopy(char *source, char *destination)
         source++;
         destination++;
     }
-    while (paren_ctr != 0 || (*source >= '0' && *source <= '9'));
+    while (parentheses_counter != 0 || (*source >= '0' && *source <= '9'));
 
     *(destination) = '\0';
 }
 
-char* SplitMainExpression(char* expression)
+char* SplitExpression(char* expression)
 {
-    int parenthesis_counter = 0;
+    int parentheses_counter = 0;
     while (*expression != '\0')
     {
 
@@ -181,15 +192,15 @@ char* SplitMainExpression(char* expression)
 
         if (*expression == '(')
         {
-            parenthesis_counter++;
+            parentheses_counter++;
         }
         else if (*expression == ')')
         {
-            parenthesis_counter--;
+            parentheses_counter--;
         }
 
-        if (parenthesis_counter == 0 && !(*(expression) >= '0' &&
-                                           *(expression) <= '9'))
+        if (parentheses_counter == 0 && !(*(expression) >= '0' &&
+                                          *(expression) <= '9'))
         {
             return expression;
         }
@@ -227,6 +238,9 @@ bool ContainsParentheses(char* string)
     return false;
 }
 
+/*This function, given two positive values, the operator between them,
+the modulus, and a pointer to the result, calculates the result of the
+mathematical operation and stores it in the result variable.*/
 
 bool MathFunc(unsigned long long val_1, unsigned long long val_2,
               char operation, unsigned int modulus, unsigned int* result)
@@ -252,12 +266,6 @@ bool MathFunc(unsigned long long val_1, unsigned long long val_2,
     }
 
     raw_result = raw_result%modulus;
-
-    if (raw_result > UINT_MAX)
-    {
-        printf("Error: result exceeds range of unsigned int.\n");
-        return false;
-    }
 
     *result = (unsigned int)raw_result;
 
