@@ -3,9 +3,9 @@
 --------------------------------------------------------------------------*/
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-
+#include <stdlib.h>
+#include <limits.h>
 
 /*=========================================================================
   Constants and definitions:
@@ -13,10 +13,11 @@
 
 /* put your #defines and typedefs here*/
 char* SplitMainExpression(char* expression);
-unsigned int calculate(char* expression, char* left, char* right, char* op);
+unsigned int calculate(char* expression, unsigned int modulus, unsigned int* result);
 void StringCopy(char *source, char *destination);
 unsigned int ExtractIntFromStr(char* string);
 bool ContainsParentheses(char* string);
+bool MathFunc(unsigned int val_1, unsigned int val_2, char operation, unsigned int modulus, unsigned int* result);
 
 
 
@@ -25,23 +26,32 @@ bool ContainsParentheses(char* string);
  -------------------------------------------------------------------------*/
 int main()
 {
-    char* expression = "(9999999*123456)";
-    char left[255];
-    char right[255];
-    char op;
+    unsigned int modulus = 100;
+    char* expression = "(((100000*100000)*(100000*100000))+1)";
+    unsigned int result = 0;
 
-    calculate(expression, left, right, &op);
+    calculate(expression, modulus, &result);
+
+    printf("Result: %u\n", result);
 
   return 0;
 }
 
 
-unsigned int calculate(char* expression, char* left, char* right, char* op)
+unsigned int calculate(char* expression, unsigned int modulus, unsigned int* result)
 {
-    *left = 0;
-    *right = 0;
+    char left[255] = {0};
+    char right[255] = {0};
+    char* op = SplitMainExpression(expression+1);
     unsigned int left_val = 0, right_val = 0;
-    op = SplitMainExpression(expression+1);
+    while (*op == '(')
+    {
+        op--;
+    }
+    while (*op == ')')
+    {
+        op++;
+    }
     printf("Operator: %c\n", *op);
     StringCopy((expression+1), left);
     printf("Left: %s\n", left);
@@ -51,15 +61,31 @@ unsigned int calculate(char* expression, char* left, char* right, char* op)
     if (ContainsParentheses(left) == false)
     {
         left_val = ExtractIntFromStr(left);
-        printf("Left val: %u\n", left_val);
+        //printf("Left val: %u\n", left_val);
     }
 
     if (ContainsParentheses(right) == false)
     {
         right_val = ExtractIntFromStr(right);
-        printf("Right val: %u\n", right_val);
+       // printf("Right val: %u\n", right_val);
     }
 
+    if (left_val == 0)
+    {
+        calculate(left, modulus, result);
+        left_val = *result;
+    }
+
+    if (right_val == 0)
+    {
+        calculate(right, modulus, result);
+        right_val = *result;
+    }
+
+    if (left_val != 0 && right_val != 0)
+    {
+        MathFunc(left_val, right_val, *op, modulus, result);
+    }
 
     return 0;
 }
@@ -141,4 +167,45 @@ bool ContainsParentheses(char* string)
     }
 
     return false;
+}
+
+
+bool MathFunc(unsigned int val_1, unsigned int val_2, char operation, unsigned int modulus, unsigned int* result)
+{
+    val_1 = val_1%modulus;
+    printf("Val 1: %u\n", val_1);
+    val_2 = val_2%modulus;
+    printf("Val 2: %u\n", val_2);
+
+    unsigned long long raw_result;
+
+    if (operation == '+')
+    {
+        raw_result = val_1 + val_2;
+    }
+
+    else if (operation == '*')
+    {
+        raw_result = val_1 * val_2;
+    }
+
+    else
+    {
+        printf("Error: invalid operator. Only + and * are supported.\n");
+        return false;
+    }
+
+    printf("%llu\n", raw_result);
+
+    raw_result = raw_result%modulus;
+
+    if (raw_result > UINT_MAX)
+    {
+        printf("Error: result exceeds range of unsigned int.\n");
+        return false;
+    }
+
+    *result = (unsigned int)raw_result;
+
+    return true;
 }
