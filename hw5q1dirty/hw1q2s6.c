@@ -25,7 +25,7 @@ bool ContainsParentheses(char* string);
  -------------------------------------------------------------------------*/
 int main()
 {
-    char* expression = "(999+((55+66)+(77+88))";
+    char* expression = "(9999999*123456)";
     char left[255];
     char right[255];
     char op;
@@ -94,7 +94,7 @@ char* SplitMainExpression(char* expression) {
     int parenthesis_counter = 0;
     while (*expression != '\0') {
 
-        if (*(expression+1) >= '0' && *(expression+1) <= '9')
+        if (*(expression) >= '0' && *(expression) <= '9')
         {
             expression++;
         }
@@ -106,8 +106,8 @@ char* SplitMainExpression(char* expression) {
             parenthesis_counter--;
         }
 
-        if (parenthesis_counter == 0) {
-            return expression + 1;
+        if (parenthesis_counter == 0 && !(*(expression) >= '0' && *(expression) <= '9')) {
+            return expression;
         }
 
         expression++;
