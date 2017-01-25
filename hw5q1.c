@@ -19,7 +19,7 @@ bool PerformArithmetic(unsigned long long val_1, unsigned long long val_2,
 bool GetNumbersFromExpression(char* left, char* right,
                               unsigned long long* left_val_ptr,
                               unsigned long long* right_val_ptr);
-void Func(unsigned int modulus, char* left, char* right,
+void CalculateModularOperand(unsigned int modulus, char* left, char* right,
           unsigned long long* left_val_ptr,
           unsigned long long* right_val_ptr,
           unsigned int* expression_result);
@@ -54,25 +54,35 @@ bool calculate_modular_expression(unsigned int modulus,
         return false;
     }
 
-    Func(modulus, left, right, &left_val, &right_val, expression_result);
+    CalculateModularOperand(modulus, left, right, &left_val, &right_val,
+                            expression_result);
 
     return PerformArithmetic(left_val, right_val, *operation, modulus,
                              expression_result);
 }
 
 
-
-void Func(unsigned int modulus, char* left, char* right,
+/*This function, given a modulus, pointers to the left and right operands
+of the modular expression, pointers to the values of the left and right
+operands, and a pointer to the expression result, applies mutual recursion,
+calling calculate_modular_expression for each operand until the operands
+are single numbers and can be 'extracted' from the string.*/
+void CalculateModularOperand(unsigned int modulus, char* left, char* right,
           unsigned long long* left_val_ptr,
           unsigned long long* right_val_ptr,
           unsigned int* expression_result)
 {
+    /*If the left value is still uninitialized (i.e, left operand is still
+    more than a single number), call calculate_modular_expression with the
+    left operand as the new expression, applying the principle of mutual
+    recursion.*/
     if (*left_val_ptr == 0)
     {
         calculate_modular_expression(modulus, left, expression_result);
         *left_val_ptr = *expression_result;
     }
 
+    /*Same idea for right side of the expression; see above explanation.*/
     if (*right_val_ptr == 0)
     {
         calculate_modular_expression(modulus, right, expression_result);
