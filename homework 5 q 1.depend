@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1485354739 source:c:\users\jonathan\dropbox\c projects\homework 5\i2chw5q1\hw5q1.c
+	<stdio.h>
+	<stdbool.h>
+	<limits.h>
+

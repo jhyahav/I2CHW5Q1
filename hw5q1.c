@@ -11,25 +11,25 @@
 
 /* FUNCTIONS */
 char* SplitMainExpression(char* expression);
-unsigned int calculate(char* expression, unsigned int modulus, unsigned int* result);
+bool calculate(char* expression,
+               unsigned int modulus, unsigned int* result);
 void StringCopy(char *source, char *destination);
 unsigned int ExtractIntFromStr(char* string);
 bool ContainsParentheses(char* string);
-bool MathFunc(unsigned int val_1, unsigned int val_2, char operation, unsigned int modulus, unsigned int* result);
+bool MathFunc(unsigned long long val_1, unsigned long long val_2,
+              char operation, unsigned int modulus, unsigned int* result);
 /* -------------------------------------------------------- */
 
 /*
    calculate_modular_expression - calculates a modular expression in the form
    (
 */
-bool calculate_modular_expression(unsigned int modulus, char* expression, unsigned int* expression_result) {
-    /* TODO: Implement this function */
+bool calculate_modular_expression(unsigned int modulus,
+                                  char* expression,
+                                  unsigned int* expression_result)
+{
 
-    calculate(expression, modulus, expression_result);
-    /* TODO: After implementing this function,
-       change the following statement to "return true;",
-       and then delete this comment. */
-    return true;
+    return calculate(expression, modulus, expression_result);
 }
 
 
@@ -43,7 +43,8 @@ bool calculate_modular_expression(unsigned int modulus, char* expression, unsign
            stores the expression string.
    Returns true if and only if the function gets the inputs successfully.
 */
-bool get_input(unsigned int* modulus_ptr, char* expression) {
+bool get_input(unsigned int* modulus_ptr, char* expression)
+{
     printf("Please enter the modulus and an expression (separated by a space).\n");
     return (scanf("%u%s", modulus_ptr, expression) == 2);
 }
@@ -53,7 +54,8 @@ bool get_input(unsigned int* modulus_ptr, char* expression) {
    validate_input - Validates program input (modulus).
    Returns true if and only if the input is valid.
 */
-bool validate_input(unsigned int modulus) {
+bool validate_input(unsigned int modulus)
+{
     /* The modulus must be greater than 1 */
     return (modulus > 1);
 }
@@ -65,22 +67,26 @@ bool validate_input(unsigned int modulus) {
    Returns 0 when the program run successfully.
    Any other value indicates an error.
 */
-int main() {
+int main()
+{
     unsigned int modulus; /* modulus */
     char expression[MAX_EXPRESSION_LENGTH+1];
     unsigned int expression_result;
 
-    if (!get_input(&modulus, expression)) {
+    if (!get_input(&modulus, expression))
+    {
         printf("ERROR: could not get input\n");
         return 1;
     }
 
-    if (!validate_input(modulus)) {
+    if (!validate_input(modulus))
+    {
         printf("ERROR: modulus is out of range\n");
         return 2;
     }
 
-    if (!calculate_modular_expression(modulus, expression, &expression_result)) {
+    if (!calculate_modular_expression(modulus, expression, &expression_result))
+    {
         printf("ERROR: the modular expression is invalid\n");
         return 3;
     }
@@ -91,12 +97,13 @@ int main() {
 }
 
 
-unsigned int calculate(char* expression, unsigned int modulus, unsigned int* result)
+bool calculate(char* expression, unsigned int modulus,
+               unsigned int* result)
 {
     char left[MAX_EXPRESSION_LENGTH] = {0};
     char right[MAX_EXPRESSION_LENGTH] = {0};
     char* op = SplitMainExpression(expression+1);
-    unsigned int left_val = 0, right_val = 0;
+    unsigned long long left_val = 0, right_val = 0;
     while (*op == '(')
     {
         op--;
@@ -120,7 +127,7 @@ unsigned int calculate(char* expression, unsigned int modulus, unsigned int* res
     if (ContainsParentheses(right) == false)
     {
         right_val = ExtractIntFromStr(right);
-       // printf("Right val: %u\n", right_val);
+        // printf("Right val: %u\n", right_val);
     }
 
     if (left_val == 0)
@@ -140,9 +147,7 @@ unsigned int calculate(char* expression, unsigned int modulus, unsigned int* res
         MathFunc(left_val, right_val, *op, modulus, result);
     }*/
 
-    MathFunc(left_val, right_val, *op, modulus, result);
-
-    return 0;
+    return MathFunc(left_val, right_val, *op, modulus, result);
 }
 
 
@@ -166,28 +171,35 @@ void StringCopy(char *source, char *destination)
 
         source++;
         destination++;
-    } while (paren_ctr != 0 || (*source >= '0' && *source <= '9'));
+    }
+    while (paren_ctr != 0 || (*source >= '0' && *source <= '9'));
 
     *(destination) = '\0';
 }
 
-char* SplitMainExpression(char* expression) {
+char* SplitMainExpression(char* expression)
+{
     int parenthesis_counter = 0;
-    while (*expression != '\0') {
+    while (*expression != '\0')
+    {
 
         if (*(expression) >= '0' && *(expression) <= '9')
         {
             expression++;
         }
 
-        if (*expression == '(') {
+        if (*expression == '(')
+        {
             parenthesis_counter++;
         }
-        else if (*expression == ')') {
+        else if (*expression == ')')
+        {
             parenthesis_counter--;
         }
 
-        if (parenthesis_counter == 0 && !(*(expression) >= '0' && *(expression) <= '9')) {
+        if (parenthesis_counter == 0 && !(*(expression) >= '0' &&
+                                           *(expression) <= '9'))
+        {
             return expression;
         }
 
@@ -225,7 +237,8 @@ bool ContainsParentheses(char* string)
 }
 
 
-bool MathFunc(unsigned int val_1, unsigned int val_2, char operation, unsigned int modulus, unsigned int* result)
+bool MathFunc(unsigned long long val_1, unsigned long long val_2,
+              char operation, unsigned int modulus, unsigned int* result)
 {
     val_1 = val_1%modulus;
     //printf("Val 1: %u\n", val_1);
@@ -246,7 +259,7 @@ bool MathFunc(unsigned int val_1, unsigned int val_2, char operation, unsigned i
 
     else
     {
-        printf("Error: invalid operator. Only + and * are supported.\n");
+        //printf("Error: invalid operator. Only + and * are supported.\n");
         return false;
     }
 
