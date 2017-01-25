@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <limits.h>
 
 /*=========================================================================
@@ -82,10 +81,12 @@ unsigned int calculate(char* expression, unsigned int modulus, unsigned int* res
         right_val = *result;
     }
 
-    if (left_val != 0 && right_val != 0)
+    /*if (left_val != 0 && right_val != 0)
     {
         MathFunc(left_val, right_val, *op, modulus, result);
-    }
+    }*/
+
+    MathFunc(left_val, right_val, *op, modulus, result);
 
     return 0;
 }
