@@ -112,22 +112,18 @@ bool calculate(char* expression, unsigned int modulus,
     {
         op++;
     }
-    //printf("Operator: %c\n", *op);
+
     StringCopy((expression+1), left);
-    //printf("Left: %s\n", left);
     StringCopy((op+1), right);
-    //printf("Right: %s\n", right);
 
     if (ContainsParentheses(left) == false)
     {
         left_val = ExtractIntFromStr(left);
-        //printf("Left val: %u\n", left_val);
     }
 
     if (ContainsParentheses(right) == false)
     {
         right_val = ExtractIntFromStr(right);
-        // printf("Right val: %u\n", right_val);
     }
 
     if (left_val == 0)
@@ -141,11 +137,6 @@ bool calculate(char* expression, unsigned int modulus,
         calculate(right, modulus, result);
         right_val = *result;
     }
-
-    /*if (left_val != 0 && right_val != 0)
-    {
-        MathFunc(left_val, right_val, *op, modulus, result);
-    }*/
 
     return MathFunc(left_val, right_val, *op, modulus, result);
 }
@@ -241,9 +232,7 @@ bool MathFunc(unsigned long long val_1, unsigned long long val_2,
               char operation, unsigned int modulus, unsigned int* result)
 {
     val_1 = val_1%modulus;
-    //printf("Val 1: %u\n", val_1);
     val_2 = val_2%modulus;
-    //printf("Val 2: %u\n", val_2);
 
     unsigned long long raw_result;
 
@@ -259,11 +248,8 @@ bool MathFunc(unsigned long long val_1, unsigned long long val_2,
 
     else
     {
-        //printf("Error: invalid operator. Only + and * are supported.\n");
         return false;
     }
-
-    //printf("%llu\n", raw_result);
 
     raw_result = raw_result%modulus;
 
