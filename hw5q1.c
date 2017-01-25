@@ -24,6 +24,24 @@ bool calculate_modular_expression(unsigned int modulus, char* expression, unsign
     return false;
 }
 
+char* SplitMainExpression(char* expression) {
+    int parenthesis_counter = 0;
+    while (*expression != '\0') {
+        if (*expression == '(') {
+            parenthesis_counter++;
+        }
+        else if (*expression == ')') {
+            parenthesis_counter--;
+        }
+
+        if (parenthesis_counter == 0) {
+            return expression;
+        }
+
+        expression++;
+    }
+}
+
 
 /*
    get_input - Gets program input (modulus, expression) from standard input.
