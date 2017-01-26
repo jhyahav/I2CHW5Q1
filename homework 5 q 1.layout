@@ -4,7 +4,22 @@
 	<ActiveTarget name="Debug" />
 	<File name="hw5q1.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3546" topLine="111" />
+			<Cursor1 position="1713" topLine="0" />
 		</Cursor>
+		<Folding>
+			<Collapse line="81" />
+			<Collapse line="101" />
+			<Collapse line="112" />
+			<Collapse line="118" />
+			<Collapse line="123" />
+			<Collapse line="129" />
+			<Collapse line="136" />
+			<Collapse line="173" />
+			<Collapse line="199" />
+			<Collapse line="227" />
+			<Collapse line="263" />
+			<Collapse line="278" />
+			<Collapse line="299" />
+		</Folding>
 	</File>
 </CodeBlocks_layout_file>

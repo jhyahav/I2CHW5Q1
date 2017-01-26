@@ -27,7 +27,15 @@ void CalculateModularOperand(unsigned int modulus, char* left, char* right,
 
 /*
    calculate_modular_expression - calculates a modular expression in the form
-   MODULUS (A [OPERATOR] B).
+   MODULUS (A [OPERATOR] B) given the modulus, the expression, and a
+   pointer to the result variable.
+   The function splits the expression into left and right operands and
+   finds the operator between the two. Using recursion, the function breaks
+   down each operand until a state is reached where both operands are
+   single numbers. Using pointers, the calculated values are passed up the
+   recursive chain until the original expression can be solved.
+   The function returns true if it ran as expected and false if an error
+   occurred.
 */
 bool calculate_modular_expression(unsigned int modulus,
                                   char* expression,
